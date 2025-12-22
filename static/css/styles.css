@@ -1,0 +1,34 @@
+body{
+    background-image: url('/static/assets/images/Dashboard Login.jpg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100vw;
+    height: 100vh;
+    font-family: 'Poppins', san-serif;
+    display: grid;
+    place-content: center;
+}
+
+.field-container{
+    position: relative;
+}
+label{
+ position: absolute;
+ left:5%;
+ top: 22%;
+}
+input{
+   width: 100%;
+   height: 2.8rem;
+   border: 1px solid #fff;
+   background-color: #264ECA;
+   border-radius: 10px;
+   box-sizing: border-box;
+   padding-left: 5rem;
+   color: #fff;
+}
+input:focus{
+    outline: none;
+
+}
