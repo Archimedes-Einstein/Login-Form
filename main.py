@@ -119,7 +119,6 @@ def delete(user_id):
 @admin_only
 def edit():
     edit_id = request.args.get('id',type=int)
-    print(edit_id)
     edit_user = db.session.execute(db.select(Users).where(Users.id == edit_id)).scalar()
     if request.method == 'POST':
         name = request.form.get('name')
@@ -129,6 +128,6 @@ def edit():
         edit_user.email = email
         db.session.commit()
         return redirect(url_for('dashboard'))
-    return render_template('edit_user.html')
+    return render_template('edit_user.html', edit_id=edit_id)
 if __name__ == '__main__':
     app.run(debug=True)
