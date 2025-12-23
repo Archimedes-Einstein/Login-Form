@@ -1,3 +1,5 @@
+from functools import wraps
+
 from flask import Flask, render_template, request, flash, url_for,redirect, abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import Mapped, mapped_column,DeclarativeBase
@@ -35,6 +37,15 @@ class Users(UserMixin,db.Model):
 with app.app_context():
     db.create_all()
 
+def admin_only(f):
+    @wraps(f)
+    @login_required
+    def wrapper(*args,**kwargs):
+        if current_user.id == 1:
+           return f(*args,**kwargs)
+        return abort(404)
+    return wrapper
+
 @login_manager.user_loader
 def load_user(user_id):
     user = db.session.execute(db.select(Users).where(Users.id == user_id)).scalar()
@@ -47,7 +58,6 @@ def home():
 @app.route('/login', methods=['POST','GET'])
 def login():
     if request.method == 'POST':
-        print(request.form['email'])
         email = request.form.get('email')
         password = request.form.get('password')
         user = db.session.execute(db.select(Users).where(Users.email == email)).scalar()
@@ -91,5 +101,34 @@ def logout():
 @login_required
 def profile():
     return render_template('profile.html')
+
+@app.route('/dashboard')
+@admin_only
+def dashboard():
+    users = db.session.execute(db.select(Users).order_by(Users.id)).scalars().all()
+    return render_template('dashboard.html', users=users)
+@app.route('/delete/<int:user_id>')
+@admin_only
+def delete(user_id):
+    delete_user = db.session.execute(db.select(Users).where(Users.id == user_id)).scalar()
+    db.session.delete(delete_user)
+    db.session.commit()
+    return redirect(url_for('dashboard'))
+
+@app.route('/edit', methods=['POST','GET'])
+@admin_only
+def edit():
+    edit_id = request.args.get('id',type=int)
+    print(edit_id)
+    edit_user = db.session.execute(db.select(Users).where(Users.id == edit_id)).scalar()
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        checkbox = request.form.get('checkbox')
+        edit_user.name = name
+        edit_user.email = email
+        db.session.commit()
+        return redirect(url_for('dashboard'))
+    return render_template('edit_user.html')
 if __name__ == '__main__':
     app.run(debug=True)

@@ -16,6 +16,9 @@
             <p class="text-white fw-normal fs-2 mb-1">Let's get started</p>
             <a class="btn btn-lg btn-outline-secondary text-white fw-bold" href="{{url_for('logout')}}">Logout</a>
             <a class="btn btn-lg btn-outline-secondary text-dark btn-light fw-bold" href="{{url_for('profile')}}">Profile</a>
+             {% if current_user.id == 1%}
+                <a class="btn btn-lg btn-outline-secondary text-white btn-dark fw-bold" href="{{url_for('dashboard')}}">DashBoard</a>
+             {% endif %}
         </div>
     {% else %}
         <h1 class="text-white text-center display-1 fw-bold">Welcome</h1>
